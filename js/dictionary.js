@@ -2,7 +2,7 @@
 // quick English→Persian translation (MyMemory, free, no key) and
 // links to Google Translate / Abadis / Fastdic.
 
-import { escapeHtml } from './common.js';
+import { escapeHtml } from './common.js?v=202611021732';
 
 const popup = document.createElement('div');
 popup.className = 'dict';

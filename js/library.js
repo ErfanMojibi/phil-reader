@@ -1,4 +1,4 @@
-import { loadIndex, escapeHtml, store, initTheme } from './common.js';
+import { loadIndex, escapeHtml, store, initTheme } from './common.js?v=202611021732';
 
 initTheme(document.getElementById('theme-btn'));
 

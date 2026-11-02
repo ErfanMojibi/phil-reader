@@ -1,5 +1,5 @@
-import { loadIndex, parseArticle, inline, escapeHtml, store, initTheme } from './common.js';
-import { showDictionary, hideDictionary } from './dictionary.js';
+import { loadIndex, parseArticle, inline, escapeHtml, store, initTheme } from './common.js?v=202611021732';
+import { showDictionary, hideDictionary } from './dictionary.js?v=202611021732';
 
 initTheme(document.getElementById('theme-btn'));
 
