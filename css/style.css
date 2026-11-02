@@ -102,7 +102,14 @@ body[data-mode="both"] .wrap.reader { max-width: 1200px; }
 .txt.en { font-family: var(--serif); font-size: 1.12rem; line-height: 1.75; }
 .txt.fa { font-size: 1.08rem; line-height: 2.05; text-align: justify; }
 .txt.en { text-align: justify; hyphens: auto; }
-h2.txt { font-size: 1.3rem !important; text-align: start !important; font-weight: 600; }
+h2.txt, h3.txt { text-align: start !important; font-weight: 600; line-height: 1.5; }
+h2.txt { font-size: 1.45rem !important; margin-top: 1.2em; }
+h3.txt { font-size: 1.2rem !important; margin-top: 1em; color: var(--accent); }
+.only-note { font-size: .75rem; color: var(--muted); margin-top: 4px; }
+/* Single-language blocks are always shown, whatever the mode. */
+.para.only-fa .txt.fa, .para.only-en .txt.en { display: block !important; margin: 0 !important; padding: 0 !important; background: none !important; border: 0 !important; }
+.para.only-fa { direction: rtl; }
+body[data-mode="both"] .para.only-fa .cols, body[data-mode="both"] .para.only-en .cols { grid-template-columns: 1fr; }
 .missing { color: var(--warn); font-style: italic; font-size: .9rem; }
 .warn { color: var(--warn); font-size: .8rem; margin-top: 4px; }
 

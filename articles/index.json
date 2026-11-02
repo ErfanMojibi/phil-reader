@@ -1,12 +1,11 @@
 [
   {
-    "id": "descartes-meditation-1",
-    "file": "descartes-meditation-1.txt",
-    "title": "Meditations on First Philosophy — Meditation I (opening)",
-    "titleFa": "تأملات در فلسفهٔ اولی — تأمل نخست (آغاز)",
+    "id": "descartes-meditations",
+    "file": "descartes-meditations.txt",
+    "title": "Meditations on First Philosophy",
+    "titleFa": "تأملات در فلسفهٔ اولی",
     "author": "René Descartes",
-    "translator": "E. S. Haldane (1911) / Persian: demo translation",
     "year": 1641,
-    "categories": ["Epistemology", "Early Modern", "Skepticism"]
+    "categories": ["Epistemology", "Metaphysics", "Early Modern"]
   }
 ]

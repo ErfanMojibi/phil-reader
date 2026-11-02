@@ -6,7 +6,7 @@ initTheme(document.getElementById('theme-btn'));
 const id = new URLSearchParams(location.search).get('id');
 const bodyEl = document.getElementById('article');
 const headEl = document.getElementById('article-head');
-const modeBtns = document.querySelectorAll('[data-mode]');
+const modeBtns = document.querySelectorAll('.seg [data-mode]');
 const dictToggle = document.getElementById('dict-toggle');
 
 let mode = store.get('reader.mode', 'en'); // 'en' | 'fa' | 'both'
@@ -22,16 +22,18 @@ function setMode(m) {
 }
 
 function renderPara(p) {
-  const tag = p.heading ? 'h2' : 'p';
-  const en = `<${tag} class="txt en" lang="en">${inline(p.en) || '<span class="missing">— English missing —</span>'}</${tag}>`;
-  const fa = `<${tag} class="txt fa" lang="fa" dir="rtl">${inline(p.fa) || '<span class="missing">— ترجمه موجود نیست —</span>'}</${tag}>`;
+  const tag = p.heading ? `h${p.level}` : 'p';
+  const en = p.en ? `<${tag} class="txt en" lang="en">${inline(p.en)}</${tag}>` : '';
+  const fa = p.fa ? `<${tag} class="txt fa" lang="fa" dir="rtl">${inline(p.fa)}</${tag}>` : '';
+  const cls = ['para', p.heading && 'heading', p.only && `only-${p.only}`].filter(Boolean).join(' ');
   return `
-    <div class="para${p.heading ? ' heading' : ''}" id="p${p.n}" data-n="${p.n}">
+    <div class="${cls}" id="p${p.n}" data-n="${p.n}">
       <span class="pnum" aria-hidden="true">${p.n}</span>
       <div class="cols">${en}${fa}</div>
+      ${p.only ? `<div class="only-note">${p.only === 'fa' ? 'Persian only · فقط فارسی' : 'English only · فقط انگلیسی'}</div>` : `
       <button class="peek" aria-label="Show this paragraph in the other language" title="Show translation of this paragraph">
         <span class="peek-en">فا</span><span class="peek-fa">EN</span>
-      </button>
+      </button>`}
       ${p.warning ? `<div class="warn">${escapeHtml(p.warning)}</div>` : ''}
     </div>`;
 }

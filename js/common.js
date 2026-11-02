@@ -38,9 +38,13 @@ export async function loadIndex() {
     Persian paragraph
 
     ===
-    # English heading
+    ## English heading          (## = section, ### = sub-section)
     ---
-    # Persian heading
+    ## Persian heading
+
+    ===
+    ---
+    A Persian-only paragraph (leave the English side empty, or vice versa)
 
   Every block starts with a line "===". Inside a block, a line "---"
   separates English (above) from Persian (below).
@@ -52,14 +56,17 @@ export function parseArticle(text) {
     const parts = block.split(/^---[ \t]*$/m);
     const read = s => {
       s = (s || '').trim();
-      const heading = /^#\s+/.test(s);
-      return { text: heading ? s.replace(/^#\s+/, '') : s, heading };
+      const m = s.match(/^(#{1,3})\s+/);
+      return { text: m ? s.slice(m[0].length) : s, level: m ? m[1].length : 0 };
     };
     const en = read(parts[0]);
     const fa = read(parts[1]);
+    const level = en.level || fa.level;
     return {
       n: i + 1,
-      heading: en.heading || fa.heading,
+      heading: level > 0,
+      level: Math.max(level, 2),
+      only: !en.text && fa.text ? 'fa' : (en.text && !fa.text ? 'en' : null),
       en: en.text,
       fa: fa.text,
       warning: parts.length !== 2 ? `Block ${i + 1}: expected exactly one "---" separator, found ${parts.length - 1}` : null,

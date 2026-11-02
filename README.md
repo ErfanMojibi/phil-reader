@@ -14,13 +14,15 @@ A bilingual (English / Persian) reader for philosophy articles, hosted on GitHub
 ## Adding an article
 
 1. Create `articles/<id>.txt`. Each paragraph pair starts with `===`; inside it,
-   `---` separates English (above) from Persian (below). Start a line with `# ` for a heading.
+   `---` separates English (above) from Persian (below). Start a line with `## ` for a
+   section heading or `### ` for a sub-section. Leave one side empty for a paragraph that
+   exists in only one language.
 
    ```
    ===
-   # Section title
+   ## Section title
    ---
-   # عنوان بخش
+   ## عنوان بخش
 
    ===
    First English paragraph...
