@@ -30,48 +30,54 @@ export async function loadIndex() {
 }
 
 /*
-  Article format (plain text):
+  Article format (Markdown):
 
-    ===
-    English paragraph
-    ---
-    Persian paragraph
+    # Article title            <- optional, ignored by the reader (for GitHub)
 
-    ===
     ## English heading          (## = section, ### = sub-section)
-    ---
-    ## Persian heading
 
-    ===
-    ---
-    A Persian-only paragraph (leave the English side empty, or vice versa)
+    > ## Persian heading
 
-  Every block starts with a line "===". Inside a block, a line "---"
-  separates English (above) from Persian (below).
+    English paragraph
+
+    > Persian paragraph
+
+  Paragraphs are separated by blank lines. A paragraph starting with ">" is
+  the Persian translation of the English paragraph just before it.
 */
 export function parseArticle(text) {
-  const blocks = text.replace(/\r\n?/g, '\n').split(/^===[ \t]*$/m)
-    .map(b => b.trim()).filter(Boolean);
-  return blocks.map((block, i) => {
-    const parts = block.split(/^---[ \t]*$/m);
-    const read = s => {
-      s = (s || '').trim();
-      const m = s.match(/^(#{1,3})\s+/);
-      return { text: m ? s.slice(m[0].length) : s, level: m ? m[1].length : 0 };
-    };
-    const en = read(parts[0]);
-    const fa = read(parts[1]);
-    const level = en.level || fa.level;
-    return {
-      n: i + 1,
-      heading: level > 0,
-      level: Math.max(level, 2),
-      only: !en.text && fa.text ? 'fa' : (en.text && !fa.text ? 'en' : null),
-      en: en.text,
-      fa: fa.text,
-      warning: parts.length !== 2 ? `Block ${i + 1}: expected exactly one "---" separator, found ${parts.length - 1}` : null,
-    };
-  });
+  const chunks = text.replace(/\r\n?/g, '\n').split(/\n[ \t]*\n/)
+    .map(c => c.trim()).filter(Boolean);
+  const heading = s => {
+    const m = s.match(/^(#{1,3})\s+/);
+    return { text: m ? s.slice(m[0].length) : s, level: m ? m[1].length : 0 };
+  };
+  const items = [];
+  for (const chunk of chunks) {
+    const isFa = chunk.startsWith('>');
+    const body = isFa ? chunk.split('\n').map(l => l.replace(/^>\s?/, '')).join(' ').trim()
+                      : chunk.split('\n').join(' ').trim();
+    const h = heading(body);
+    if (!isFa && h.level === 1) continue; // file title
+    const last = items[items.length - 1];
+    if (isFa && last && !last.fa) {
+      last.fa = h.text;
+      last.level = last.level || h.level;
+    } else if (isFa) {
+      items.push({ en: '', fa: h.text, level: h.level });
+    } else {
+      items.push({ en: h.text, fa: '', level: h.level });
+    }
+  }
+  return items.map((it, i) => ({
+    n: i + 1,
+    heading: it.level > 0,
+    level: Math.max(it.level, 2),
+    only: !it.en ? 'fa' : (!it.fa ? 'en' : null),
+    en: it.en,
+    fa: it.fa,
+    warning: null,
+  }));
 }
 
 // Theme toggle shared by both pages.

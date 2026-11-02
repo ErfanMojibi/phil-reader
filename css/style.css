@@ -172,3 +172,5 @@ body[data-mode="both"] .peek { display: none; }
 .dict-links { display: flex; flex-wrap: wrap; gap: 6px 14px; padding-top: 8px; border-top: 1px solid var(--line); font-size: .85rem; }
 
 .hint { color: var(--muted); font-size: .85rem; margin-top: 40px; }
+.dict-fa .fa-pos { color: var(--accent); font-size: .82rem; }
+.dict-fa .fa-src { color: var(--muted); font-size: .72rem; margin-top: 4px; text-align: left; }

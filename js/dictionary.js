@@ -28,15 +28,41 @@ async function definitions(word) {
   return { phonetic, audio, meanings };
 }
 
-async function toPersian(text) {
+// Google Translate's public web endpoint (the one its own widgets use). It is
+// free and needs no key, but it is unofficial, so MyMemory is the fallback.
+async function googlePersian(text) {
+  const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=fa&dt=t&dt=bd&q='
+    + encodeURIComponent(text);
+  const res = await fetch(url);
+  if (!res.ok) return null;
+  const data = await res.json();
+  const main = (data[0] || []).map(seg => seg[0]).filter(Boolean).join('').trim();
+  // For single words Google also returns alternatives grouped by part of speech.
+  const groups = (Array.isArray(data[1]) ? data[1] : [])
+    .filter(g => Array.isArray(g) && Array.isArray(g[1]))
+    .map(g => ({ pos: g[0], words: g[1].slice(0, 6) }));
+  return main ? { main, groups, source: 'Google Translate' } : null;
+}
+
+async function myMemoryPersian(text) {
   const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|fa`;
   const res = await fetch(url);
   if (!res.ok) return null;
   const data = await res.json();
   const main = data.responseData?.translatedText;
   const alts = [...new Set((data.matches || []).map(m => m.translation).filter(t => t && t !== main))].slice(0, 3);
-  return main ? { main, alts } : null;
+  return main ? { main, groups: alts.length ? [{ pos: '', words: alts }] : [], source: 'MyMemory' } : null;
 }
+
+async function toPersian(text) {
+  try {
+    const g = await googlePersian(text);
+    if (g) return g;
+  } catch { /* fall through */ }
+  return myMemoryPersian(text);
+}
+
+const POS_FA = { noun: 'اسم', verb: 'فعل', adjective: 'صفت', adverb: 'قید', preposition: 'حرف اضافه', conjunction: 'حرف ربط', pronoun: 'ضمیر' };
 
 function links(text, isWord) {
   const q = encodeURIComponent(text);
@@ -82,7 +108,9 @@ export async function showDictionary(text, rect) {
     if (my !== token) return;
     const el = popup.querySelector('.dict-fa');
     el.innerHTML = r
-      ? `<div class="fa-main">${escapeHtml(r.main)}</div>${r.alts.length ? `<div class="fa-alts">${r.alts.map(escapeHtml).join('، ')}</div>` : ''}`
+      ? `<div class="fa-main">${escapeHtml(r.main)}</div>
+         ${r.groups.map(g => `<div class="fa-alts">${g.pos ? `<span class="fa-pos">${escapeHtml(POS_FA[g.pos] || g.pos)}:</span> ` : ''}${g.words.map(escapeHtml).join('، ')}</div>`).join('')}
+         <div class="fa-src" dir="ltr">${escapeHtml(r.source)}</div>`
       : '<span class="muted">ترجمه در دسترس نیست — از پیوند گوگل ترنسلیت استفاده کنید.</span>';
   }).catch(() => {
     if (my === token) popup.querySelector('.dict-fa').innerHTML = '<span class="muted">ترجمه در دسترس نیست.</span>';
