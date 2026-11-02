@@ -1,8 +1,8 @@
 // Dictionary popup: English definitions (dictionaryapi.dev, free, no key),
-// quick English→Persian translation (MyMemory, free, no key) and
+// English→Persian translation (Google Translate, falling back to MyMemory) and
 // links to Google Translate / Abadis / Fastdic.
 
-import { escapeHtml } from './common.js?v=202611021732';
+import { escapeHtml } from './common.js?v=202611021737';
 
 const popup = document.createElement('div');
 popup.className = 'dict';
@@ -13,6 +13,37 @@ document.body.appendChild(popup);
 let token = 0;
 
 export function hideDictionary() { popup.hidden = true; token++; }
+
+// Small "Translate" button shown next to a selection. Nothing else happens
+// unless it is pressed, so selecting text to copy stays undisturbed.
+const chip = document.createElement('button');
+chip.className = 'dict-chip';
+chip.type = 'button';
+chip.hidden = true;
+chip.innerHTML = '<span lang="fa">ترجمه</span> · Translate';
+document.body.appendChild(chip);
+let chipData = null;
+
+export function showChip(text, rect) {
+  chipData = { text, rect };
+  chip.hidden = false;
+  const w = chip.offsetWidth, h = chip.offsetHeight;
+  let left = rect.left + window.scrollX + rect.width / 2 - w / 2;
+  left = Math.max(8 + window.scrollX, Math.min(left, window.scrollX + window.innerWidth - w - 8));
+  let top = rect.top + window.scrollY - h - 8;
+  if (rect.top < h + 70) top = rect.bottom + window.scrollY + 8; // no room above (under the top bar)
+  chip.style.left = left + 'px';
+  chip.style.top = top + 'px';
+}
+export function hideChip() { chip.hidden = true; chipData = null; }
+
+chip.addEventListener('mousedown', e => e.preventDefault()); // keep the selection
+chip.addEventListener('click', () => {
+  if (!chipData) return;
+  const { text, rect } = chipData;
+  hideChip();
+  showDictionary(text, rect);
+});
 
 async function definitions(word) {
   const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
@@ -133,5 +164,8 @@ export async function showDictionary(text, rect) {
   }
 }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') hideDictionary(); });
-document.addEventListener('mousedown', e => { if (!popup.hidden && !popup.contains(e.target)) hideDictionary(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { hideDictionary(); hideChip(); } });
+document.addEventListener('mousedown', e => {
+  if (!popup.hidden && !popup.contains(e.target)) hideDictionary();
+  if (!chip.hidden && e.target !== chip && !chip.contains(e.target)) hideChip();
+});

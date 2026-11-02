@@ -5,7 +5,9 @@ A bilingual (English / Persian) reader for philosophy articles, hosted on GitHub
 - **Library** with categories and search
 - **Reading modes:** English, فارسی, or side by side
 - **Per-paragraph translation:** click the `فا` / `EN` button beside any paragraph
-- **Dictionary:** double-click a word (or select a phrase) in the English text
+- **Table of contents:** clickable sidebar built from the headings (a slide-in panel on phones)
+- **Dictionary, only when asked:** double-click a word in the English text, or select a
+  phrase and press the small *Translate* button (plain selecting/copying is not interrupted)
   - English definitions: [Free Dictionary API](https://dictionaryapi.dev)
   - English→Persian inside the popup: Google Translate (falls back to [MyMemory](https://mymemory.translated.net))
   - Links to Google Translate, Abadis, Fastdic, Cambridge

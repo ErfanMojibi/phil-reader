@@ -57,7 +57,16 @@ a { color: var(--accent); }
 .switch { display: inline-flex; align-items: center; gap: 6px; font-size: .88rem; color: var(--muted); cursor: pointer; }
 
 .wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 80px; }
-body[data-mode="both"] .wrap.reader { max-width: 1200px; }
+body[data-mode="both"] .wrap.reader { max-width: 1200px; --maxw: 1200px; }
+/* Reading column, centred in the space left of the contents sidebar (if open). */
+:root { --toc-w: 0px; }
+@media (min-width: 1100px) { body.toc-open { --toc-w: 270px; } }
+.wrap.reader {
+  --maxw: 760px;
+  margin-left: calc(var(--toc-w) + max(0px, (100% - var(--toc-w) - var(--maxw)) / 2));
+  margin-right: 0;
+}
+.para { scroll-margin-top: calc(var(--bar-h, 57px) + 12px); }
 
 /* Library */
 .lib-head h1 { font-family: var(--serif); font-weight: 600; margin: 8px 0 4px; }
@@ -141,7 +150,7 @@ body[data-mode="en"] .para.open .txt.fa, body[data-mode="fa"] .para.open .txt.en
 body[data-mode="fa"] .para.open .txt.en { font-size: 1.02rem; }
 body[data-mode="fa"] .para.open .txt.fa { order: -1; } /* Persian stays on the right */
 @media (min-width: 861px) {
-  .para.open { --w: min(1160px, calc(100vw - 150px)); }
+  .para.open { --w: min(1160px, calc(100vw - var(--toc-w) - 150px)); }
   .para.open .cols {
     display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start;
     width: var(--w); position: relative; left: calc((100% - var(--w)) / 2);
@@ -188,3 +197,40 @@ body[data-mode="both"] .peek { display: none; }
 .hint { color: var(--muted); font-size: .85rem; margin-top: 40px; }
 .dict-fa .fa-pos { color: var(--accent); font-size: .82rem; }
 .dict-fa .fa-src { color: var(--muted); font-size: .72rem; margin-top: 4px; text-align: left; }
+
+/* Contents sidebar */
+.toc-btn {
+  background: var(--surface); color: var(--text); border: 1px solid var(--line);
+  border-radius: 8px; padding: 5px 10px; font: inherit; font-size: .88rem; cursor: pointer;
+}
+.toc-btn[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
+.toc {
+  position: fixed; z-index: 20; left: 0; top: var(--bar-h, 57px); bottom: 0;
+  width: 270px; overflow-y: auto; padding: 22px 14px 40px;
+  background: var(--bg); border-right: 1px solid var(--line);
+  transform: translateX(-100%); visibility: hidden; transition: transform .2s ease, visibility .2s;
+}
+body.toc-open .toc { transform: none; visibility: visible; }
+.toc-title { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 8px 10px; }
+.toc ol { list-style: none; margin: 0; padding: 0; }
+.toc a {
+  display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: .9rem; line-height: 1.4;
+}
+.toc a:hover { color: var(--text); background: var(--alt-bg); }
+.toc a.active { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+.toc .lvl2 a { color: var(--text); font-family: var(--serif); font-weight: 600; margin-bottom: 4px; }
+.toc[dir="rtl"] .lvl2 a, .toc [lang="fa"] { font-family: var(--fa); }
+.toc .lvl3 a { padding-inline-start: 16px; }
+.toc-scrim { position: fixed; inset: var(--bar-h, 57px) 0 0 0; z-index: 19; background: rgba(0,0,0,.35); }
+@media (max-width: 1099px) {
+  .toc { width: min(300px, 85vw); box-shadow: var(--shadow); }
+}
+
+/* "Translate" button shown next to a text selection */
+.dict-chip {
+  position: absolute; z-index: 45; border: 0; border-radius: 999px; cursor: pointer;
+  padding: 5px 12px; font: inherit; font-size: .82rem;
+  background: var(--accent); color: #fff; box-shadow: var(--shadow);
+}
+.dict-chip [lang="fa"] { font-family: var(--fa); }
