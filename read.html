@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Philosophy Reader</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Literata:ital,wght@0,400;0,600;1,400&family=Vazirmatn:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-mode="en">
+  <header class="bar">
+    <a class="brand" href="./">← Library</a>
+    <div class="seg" role="group" aria-label="Reading language">
+      <button data-mode="en">English</button>
+      <button data-mode="fa" lang="fa">فارسی</button>
+      <button data-mode="both">Side by side</button>
+    </div>
+    <label class="switch"><input type="checkbox" id="dict-toggle"> Dictionary</label>
+    <button id="theme-btn" class="icon-btn" aria-label="Toggle dark mode">◐</button>
+  </header>
+  <main class="wrap reader">
+    <div id="article-head"></div>
+    <article id="article"><p class="empty">Loading…</p></article>
+    <p class="hint">Tip: click <strong lang="fa">فا</strong> beside a paragraph to see its translation. Double-click a word (or select a phrase) in the English text for the dictionary.</p>
+  </main>
+  <script type="module" src="js/reader.js"></script>
+</body>
+</html>

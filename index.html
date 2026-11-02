@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Philosophy Reader</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Literata:ital,wght@0,400;0,600;1,400&family=Vazirmatn:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="bar">
+    <a class="brand" href="./">Philosophy Reader</a>
+    <button id="theme-btn" class="icon-btn" aria-label="Toggle dark mode">◐</button>
+  </header>
+  <main class="wrap">
+    <div class="lib-head">
+      <h1>Library</h1>
+      <p>Bilingual readings · <span lang="fa" dir="rtl">متون دوزبانه</span></p>
+    </div>
+    <input id="search" class="search" type="search" placeholder="Search title, author, category…">
+    <div id="chips" class="chips"></div>
+    <div id="list" class="list"></div>
+  </main>
+  <script type="module" src="js/library.js"></script>
+</body>
+</html>
