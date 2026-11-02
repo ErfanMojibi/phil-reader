@@ -127,21 +127,35 @@ body[data-mode="both"] .para.only-fa .cols, body[data-mode="both"] .para.only-en
 /* Mode: English primary */
 body[data-mode="en"] .txt.fa { display: none; }
 body[data-mode="en"] .peek-fa { display: none; }
-body[data-mode="en"] .para.open .txt.fa {
-  display: block; margin-top: 10px; padding: 12px 16px; border-radius: 10px;
-  background: var(--alt-bg); border-right: 3px solid var(--accent);
-}
 /* Mode: Persian primary */
 body[data-mode="fa"] .wrap.reader { direction: rtl; }
 body[data-mode="fa"] .txt.en { display: none; direction: ltr; }
 body[data-mode="fa"] .peek-en { display: none; }
 body[data-mode="fa"] .peek { right: auto; left: -44px; }
 body[data-mode="fa"] .para .pnum { left: auto; right: -34px; text-align: left; }
-body[data-mode="fa"] .para.open .txt.en {
-  display: block; margin-top: 10px; padding: 12px 16px; border-radius: 10px;
-  background: var(--alt-bg); border-left: 3px solid var(--accent); font-size: 1.02rem;
-}
 body[data-mode="fa"] #article-head { direction: ltr; }
+/* An opened paragraph: original and translation side by side. The paragraph
+   widens beyond the reading column so both halves stay comfortable to read. */
+.para.open .txt { display: block !important; }
+body[data-mode="en"] .para.open .txt.fa, body[data-mode="fa"] .para.open .txt.en { background: var(--alt-bg); border-radius: 10px; padding: 8px 16px; }
+body[data-mode="fa"] .para.open .txt.en { font-size: 1.02rem; }
+body[data-mode="fa"] .para.open .txt.fa { order: -1; } /* Persian stays on the right */
+@media (min-width: 861px) {
+  .para.open { --w: min(1160px, calc(100vw - 150px)); }
+  .para.open .cols {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start;
+    width: var(--w); position: relative; left: calc((100% - var(--w)) / 2);
+  }
+  body[data-mode="fa"] .para.open .cols { left: auto; right: calc((100% - var(--w)) / 2); }
+  .para.open .peek { right: calc((100% - var(--w)) / 2 - 44px); }
+  body[data-mode="fa"] .para.open .peek { right: auto; left: calc((100% - var(--w)) / 2 - 44px); }
+  .para.open .pnum { left: calc((100% - var(--w)) / 2 - 34px); }
+  body[data-mode="fa"] .para.open .pnum { left: auto; right: calc((100% - var(--w)) / 2 - 34px); }
+}
+@media (max-width: 860px) {
+  .para.open .txt { margin-top: 10px; }
+  body[data-mode="fa"] .para.open .txt.fa { order: 0; }
+}
 /* Mode: side by side */
 body[data-mode="both"] .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
 body[data-mode="both"] .peek { display: none; }
