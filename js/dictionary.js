@@ -2,7 +2,7 @@
 // English→Persian translation (Google Translate, falling back to MyMemory) and
 // links to Google Translate / Abadis / Fastdic.
 
-import { escapeHtml } from './common.js?v=202611021737';
+import { escapeHtml } from './common.js?v=202611031528';
 
 const popup = document.createElement('div');
 popup.className = 'dict';
@@ -24,9 +24,14 @@ chip.innerHTML = '<span lang="fa">ترجمه</span> · Translate';
 document.body.appendChild(chip);
 let chipData = null;
 
-export function showChip(text, rect) {
-  chipData = { text, rect };
+// On touch screens the phone's own Copy/Select menu appears right next to the
+// selection and would cover the button, so there it sits at the bottom of the
+// screen instead (class "touch", positioned by CSS).
+export function showChip(text, rect, { touch = false } = {}) {
+  chipData = { text, rect, touch };
+  chip.classList.toggle('touch', touch);
   chip.hidden = false;
+  if (touch) { chip.style.left = chip.style.top = ''; return; }
   const w = chip.offsetWidth, h = chip.offsetHeight;
   let left = rect.left + window.scrollX + rect.width / 2 - w / 2;
   left = Math.max(8 + window.scrollX, Math.min(left, window.scrollX + window.innerWidth - w - 8));
@@ -35,13 +40,22 @@ export function showChip(text, rect) {
   chip.style.left = left + 'px';
   chip.style.top = top + 'px';
 }
-export function hideChip() { chip.hidden = true; chipData = null; }
+// Tapping the button can clear the selection before the tap's click arrives;
+// don't let that selection change hide the button out from under the tap.
+let pressedAt = 0;
+export function hideChip(force = false) {
+  if (!force && Date.now() - pressedAt < 1000) return;
+  chip.hidden = true;
+  chipData = null;
+}
 
+chip.addEventListener('pointerdown', () => { pressedAt = Date.now(); });
 chip.addEventListener('mousedown', e => e.preventDefault()); // keep the selection
 chip.addEventListener('click', () => {
   if (!chipData) return;
-  const { text, rect } = chipData;
-  hideChip();
+  const { text, rect, touch } = chipData;
+  hideChip(true);
+  if (touch) window.getSelection()?.removeAllRanges(); // dismiss the phone's menu
   showDictionary(text, rect);
 });
 

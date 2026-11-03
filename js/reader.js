@@ -1,5 +1,5 @@
-import { loadIndex, parseArticle, inline, escapeHtml, store, initTheme } from './common.js?v=202611021737';
-import { showDictionary, hideDictionary, showChip, hideChip } from './dictionary.js?v=202611021737';
+import { loadIndex, parseArticle, inline, escapeHtml, store, initTheme } from './common.js?v=202611031528';
+import { showDictionary, hideDictionary, showChip, hideChip } from './dictionary.js?v=202611031528';
 
 initTheme(document.getElementById('theme-btn'));
 
@@ -51,12 +51,13 @@ function renderToc() {
   const fa = mode === 'fa';
   tocEl.dir = fa ? 'rtl' : 'ltr';
   tocEl.innerHTML = `
-    <div class="toc-title">${fa ? 'فهرست' : 'Contents'}</div>
+    <div class="toc-title">${fa ? 'فهرست' : 'Contents'} <span class="toc-pct"></span></div>
     <ol>${tocItems.map(p => {
       const text = (fa ? p.fa : p.en) || p.en || p.fa;
       return `<li class="lvl${p.level}"><a href="#p${p.n}" data-n="${p.n}"${fa ? ' lang="fa"' : ''}>${inline(text)}</a></li>`;
     }).join('')}</ol>`;
   updateActiveToc();
+  updateProgress();
 }
 
 function updateActiveToc() {
@@ -91,11 +92,26 @@ tocEl.addEventListener('click', e => {
 });
 wide.addEventListener('change', () => setTocOpen(wide.matches && tocItems.length > 0 && store.get('reader.toc', true), false));
 
+// ---- Reading progress ----------------------------------------------------
+// 0% when the article starts at the top of the screen, 100% when its end is
+// in view. Shown as a bar under the top bar and as a percentage.
+const progressFill = document.getElementById('progress-fill');
+function updateProgress() {
+  const r = bodyEl.getBoundingClientRect();
+  const barH = document.querySelector('.bar').offsetHeight;
+  const total = r.height - (innerHeight - barH);
+  const done = total > 0 ? Math.min(1, Math.max(0, (barH - r.top) / total)) : 1;
+  const pct = Math.round(done * 100);
+  progressFill.style.transform = `scaleX(${done})`;
+  progressFill.parentElement.setAttribute('aria-valuenow', pct);
+  document.querySelectorAll('.toc-pct').forEach(el => { el.textContent = `· ${pct}%`; });
+}
+
 let scrollTick = false;
 addEventListener('scroll', () => {
   if (scrollTick) return;
   scrollTick = true;
-  requestAnimationFrame(() => { scrollTick = false; updateActiveToc(); });
+  requestAnimationFrame(() => { scrollTick = false; updateActiveToc(); updateProgress(); });
 }, { passive: true });
 
 // Keep the sidebar just below the top bar (which wraps on small screens).
@@ -126,6 +142,7 @@ async function init() {
   tocBtn.hidden = !tocItems.length;
   setTocOpen(tocItems.length > 0 && wide.matches && store.get('reader.toc', true), false);
   renderToc();
+  addEventListener('resize', updateProgress);
 
   // Resume reading position.
   const saved = store.get(`progress.${id}`, null);
@@ -184,7 +201,7 @@ document.addEventListener('selectionchange', () => {
   selTimer = setTimeout(() => {
     const s = currentSelection();
     if (!s) { hideChip(); return; }
-    if (dictOn && lastPointer !== 'mouse') showChip(s.text, s.rect);
+    if (dictOn && lastPointer !== 'mouse') showChip(s.text, s.rect, { touch: true });
   }, 350);
 });
 
@@ -193,7 +210,7 @@ dictToggle.checked = dictOn;
 dictToggle.addEventListener('change', () => {
   dictOn = dictToggle.checked;
   store.set('reader.dict', dictOn);
-  if (!dictOn) { hideDictionary(); hideChip(); }
+  if (!dictOn) { hideDictionary(); hideChip(true); }
 });
 
 setMode(mode);

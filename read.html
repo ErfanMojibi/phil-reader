@@ -7,12 +7,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,wght@0,400;0,600;1,400&family=Vazirmatn:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=202611021737">
+  <link rel="stylesheet" href="css/style.css?v=202611031528">
 </head>
 <body data-mode="en">
   <header class="bar">
     <a class="brand" href="./">← Library</a>
-    <button id="toc-btn" class="toc-btn" aria-controls="toc" aria-expanded="false">☰ Contents</button>
+    <button id="toc-btn" class="toc-btn" aria-controls="toc" aria-expanded="false">☰ <span class="toc-label">Contents</span> <span class="toc-pct"></span></button>
     <div class="seg" role="group" aria-label="Reading language">
       <button data-mode="en">English</button>
       <button data-mode="fa" lang="fa">فارسی</button>
@@ -20,6 +20,7 @@
     </div>
     <label class="switch"><input type="checkbox" id="dict-toggle"> Dictionary</label>
     <button id="theme-btn" class="icon-btn" aria-label="Toggle dark mode">◐</button>
+    <div class="progress" role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="progress-fill" class="progress-fill"></div></div>
   </header>
   <nav id="toc" class="toc" aria-label="Table of contents"></nav>
   <div id="toc-scrim" class="toc-scrim" hidden></div>
@@ -28,6 +29,6 @@
     <article id="article"><p class="empty">Loading…</p></article>
     <p class="hint">Tip: click <strong lang="fa">فا</strong> beside a paragraph to see its translation. Double-click a word in the English text for the dictionary, or select a phrase and press <strong>Translate</strong>.</p>
   </main>
-  <script type="module" src="js/reader.js?v=202611021737"></script>
+  <script type="module" src="js/reader.js?v=202611031528"></script>
 </body>
 </html>

@@ -234,3 +234,19 @@ body.toc-open .toc { transform: none; visibility: visible; }
   background: var(--accent); color: #fff; box-shadow: var(--shadow);
 }
 .dict-chip [lang="fa"] { font-family: var(--fa); }
+
+/* Reading progress: thin bar along the bottom edge of the top bar */
+.progress { position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; pointer-events: none; }
+.progress-fill { height: 100%; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform .1s linear; }
+.toc-pct { color: var(--muted); font-variant-numeric: tabular-nums; }
+.toc-btn .toc-pct { font-size: .8rem; }
+.toc-title .toc-pct { text-transform: none; letter-spacing: 0; }
+@media (max-width: 480px) { .toc-btn .toc-label { display: none; } }
+
+/* Touch screens: Translate button at the bottom of the screen, clear of the
+   phone's own selection menu */
+.dict-chip.touch {
+  position: fixed; left: 50%; top: auto; transform: translateX(-50%);
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  padding: 10px 20px; font-size: .95rem;
+}
