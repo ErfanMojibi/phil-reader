@@ -2,7 +2,7 @@
 // English→Persian translation (Google Translate, falling back to MyMemory) and
 // links to Google Translate / Abadis / Fastdic.
 
-import { escapeHtml } from './common.js?v=202611031528';
+import { escapeHtml } from './common.js?v=202611031556';
 
 const popup = document.createElement('div');
 popup.className = 'dict';
@@ -82,6 +82,7 @@ async function googlePersian(text) {
   if (!res.ok) return null;
   const data = await res.json();
   const main = (data[0] || []).map(seg => seg[0]).filter(Boolean).join('').trim();
+  // (Google keeps the blank lines between paragraphs; .fa-main preserves them.)
   // For single words Google also returns alternatives grouped by part of speech.
   const groups = (Array.isArray(data[1]) ? data[1] : [])
     .filter(g => Array.isArray(g) && Array.isArray(g[1]))
@@ -104,7 +105,7 @@ async function toPersian(text) {
     const g = await googlePersian(text);
     if (g) return g;
   } catch { /* fall through */ }
-  return myMemoryPersian(text);
+  return text.length <= 480 ? myMemoryPersian(text) : null;
 }
 
 const POS_FA = { noun: 'اسم', verb: 'فعل', adjective: 'صفت', adverb: 'قید', preposition: 'حرف اضافه', conjunction: 'حرف ربط', pronoun: 'ضمیر' };
@@ -134,7 +135,7 @@ function position(rect) {
 
 export async function showDictionary(text, rect) {
   const my = ++token;
-  text = text.trim().replace(/\s+/g, ' ');
+  text = text.trim().replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n');
   const isWord = /^[A-Za-z][A-Za-z'-]*$/.test(text);
   const word = isWord ? text.toLowerCase().replace(/'s$/, '') : text;
 

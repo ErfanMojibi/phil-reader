@@ -1,5 +1,5 @@
-import { loadIndex, parseArticle, inline, escapeHtml, store, initTheme } from './common.js?v=202611031528';
-import { showDictionary, hideDictionary, showChip, hideChip } from './dictionary.js?v=202611031528';
+import { loadIndex, parseArticle, inline, escapeHtml, store, initTheme } from './common.js?v=202611031556';
+import { showDictionary, hideDictionary, showChip, hideChip } from './dictionary.js?v=202611031556';
 
 initTheme(document.getElementById('theme-btn'));
 
@@ -171,24 +171,48 @@ bodyEl.addEventListener('click', e => {
 //  - select text by dragging (or long-press on touch) -> a small "Translate"
 //    button appears; the popup opens only if it is pressed. Copying is unaffected.
 
+const MAX_SELECTION = 2000; // characters sent for translation
+
+// The English text inside the current selection, or null. Only the English
+// paragraphs count: paragraph numbers, the فا/EN buttons and hidden Persian
+// text are left out, and paragraphs are joined with blank lines.
 function currentSelection() {
   const sel = window.getSelection();
-  const text = sel?.toString().trim();
-  if (!text || text.length > 300 || !sel.rangeCount) return null;
-  const node = sel.anchorNode?.nodeType === 1 ? sel.anchorNode : sel.anchorNode?.parentElement;
-  if (!node?.closest('.txt.en')) return null;
-  return { text, rect: sel.getRangeAt(0).getBoundingClientRect() };
+  if (!sel || sel.isCollapsed || !sel.rangeCount) return null;
+  const range = sel.getRangeAt(0);
+  const parts = [];
+  for (const el of bodyEl.querySelectorAll('.txt.en')) {
+    if (!range.intersectsNode(el)) continue;
+    const r = document.createRange();
+    r.selectNodeContents(el);
+    if (el.contains(range.startContainer)) r.setStart(range.startContainer, range.startOffset);
+    if (el.contains(range.endContainer)) r.setEnd(range.endContainer, range.endOffset);
+    const t = r.toString().replace(/\s+/g, ' ').trim();
+    if (t) parts.push(t);
+  }
+  let text = parts.join('\n\n');
+  if (!text) return null;
+  if (text.length > MAX_SELECTION) text = text.slice(0, MAX_SELECTION).replace(/\s+\S*$/, '') + '…';
+  return { text, rect: range.getBoundingClientRect() };
 }
+
+// For long selections the selection's box can run off screen, so anchor the
+// button and popup at the point where the mouse was released.
+const pointRect = (x, y) => ({ left: x, right: x, width: 0, top: y - 12, bottom: y + 12, height: 24 });
 const isWord = t => /^[A-Za-z][A-Za-z'’-]*$/.test(t);
 
-bodyEl.addEventListener('mouseup', e => {
-  if (!dictOn || e.target.closest('.peek')) return;
+// Listen on the whole document: a drag-selection often ends outside the text
+// column (past the end of a line, in the margin, over the sidebar).
+document.addEventListener('mouseup', e => {
+  if (!dictOn || e.button !== 0) return;
+  if (e.target.closest('.peek, .dict, .dict-chip, .bar, .toc')) return;
   const clicks = e.detail;
+  const { clientX: x, clientY: y } = e;
   setTimeout(() => {
     const s = currentSelection();
     if (!s) return;
     if (clicks === 2 && isWord(s.text)) { hideChip(); showDictionary(s.text, s.rect); }
-    else showChip(s.text, s.rect);
+    else showChip(s.text, s.rect.height > 80 ? pointRect(x, y) : s.rect);
   }, 10);
 });
 

@@ -185,7 +185,7 @@ body[data-mode="both"] .peek { display: none; }
 .dict-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .dict-word { font-family: var(--serif); font-size: 1.1rem; }
 .dict-fa { margin: 8px 0; padding: 8px 10px; background: var(--alt-bg); border-radius: 8px; }
-.dict-fa .fa-main { font-size: 1.05rem; }
+.dict-fa .fa-main { font-size: 1.05rem; white-space: pre-line; }
 .dict-fa .fa-alts { color: var(--muted); font-size: .88rem; margin-top: 2px; }
 .dict .muted { color: var(--muted); }
 .dict .phon { color: var(--muted); }
