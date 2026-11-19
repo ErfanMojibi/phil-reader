@@ -24,5 +24,17 @@
       "Metaphysics",
       "Philosophy of Science"
     ]
+  },
+  {
+    "id": "hasse-avicenna-optimism",
+    "file": "hasse-avicenna-optimism.md",
+    "title": "Avicenna’s epistemological optimism",
+    "titleFa": "خوش‌بینی معرفت‌شناختی ابن‌سینا",
+    "author": "Dag Nikolaus Hasse",
+    "categories": [
+      "Epistemology",
+      "Islamic Philosophy",
+      "Medieval Philosophy"
+    ]
   }
 ]
