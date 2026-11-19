@@ -6,6 +6,23 @@
     "titleFa": "تأملات در فلسفهٔ اولی",
     "author": "René Descartes",
     "year": 1641,
-    "categories": ["Epistemology", "Metaphysics", "Early Modern"]
+    "categories": [
+      "Epistemology",
+      "Metaphysics",
+      "Early Modern"
+    ]
+  },
+  {
+    "id": "schlick-positivism-realism",
+    "file": "schlick-positivism-realism.md",
+    "title": "Positivism and Realism",
+    "titleFa": "اثبات‌گرایی و واقع‌گرایی",
+    "author": "Moritz Schlick",
+    "year": "1932–1933",
+    "categories": [
+      "Epistemology",
+      "Metaphysics",
+      "Philosophy of Science"
+    ]
   }
 ]
